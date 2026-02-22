@@ -15,4 +15,16 @@ class Product extends Model
         'price',
         'stock',
     ];
+
+    // Relasi: Produk ini dipakai sebagai syarat di promo apa saja?
+    public function promosAsRequirement()
+    {
+        return $this->hasMany(Promo::class, 'buy_product_id');
+    }
+
+    // Relasi: Produk ini dipakai sebagai hadiah di promo apa saja?
+    public function promosAsReward()
+    {
+        return $this->hasMany(Promo::class, 'free_product_id');
+    }
 }
