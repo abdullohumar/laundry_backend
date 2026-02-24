@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\ShiftController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -16,7 +17,15 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user()->load('roles');
     });
 
-    Route::middleware('can:manage_users')->group(function(){
+    // Route untuk Shift
+    Route::get('/shifts/current', [ShiftController::class, 'current']);
+    Route::post('/shifts/start', [ShiftController::class, 'start']);
+    Route::post('/shifts/close', [ShiftController::class, 'close']);
+
+    // Rute Store Transaksi (Karyawan)
+    Route::post('/transactions', [TransactionController::class, 'store']);
+
+    Route::middleware('can:manage_users')->group(function () {
         Route::apiResource('users', UserController::class);
     });
 
