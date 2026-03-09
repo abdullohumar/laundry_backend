@@ -71,7 +71,7 @@ class ShiftController extends Controller
 
         $shift->update([
             'ending_cash' => $request->ending_cash,
-            'status' => 'closed',
+            'status' => 'close',
             'closed_at' => now(),
         ]);
 

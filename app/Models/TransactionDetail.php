@@ -12,10 +12,11 @@ class TransactionDetail extends Model
 
     protected $fillable = [
         'transaction_id',
-        'service_id',
+        'product_id',
+        'machine_id',
         'quantity',
         'price',
-        'total'
+        'subtotal'
     ];
 
     public function transaction(): BelongsTo

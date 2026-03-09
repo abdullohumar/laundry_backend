@@ -20,12 +20,12 @@ class TransactionController extends Controller
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        $query = Transaction::with(['shift.user', 'customer', 'detail.product']);
+        $query = Transaction::with(['shift.user', 'customer', 'details.product']);
         // LOGIKA FILTER PINTAR:
         // Jika dia BUKAN super_admin, maka dia adalah karyawan biasa.
         // Karyawan HANYA boleh melihat transaksi dari shift yang dia buka sendiri.
-        if(!$user->hasRole('super_admin')) {
-            $query->whereHas('shift', function($q) use ($user) {
+        if (!$user->hasRole('super_admin')) {
+            $query->whereHas('shift', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
             });
         }
@@ -80,13 +80,13 @@ class TransactionController extends Controller
             foreach ($request->items as $item) {
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $subtotal = $product->price * $item['quantity'];
-                
+
                 // MENGUNCI HARGA: Simpan harga saat ini ke detail
                 $transaction->details()->create([
                     'product_id' => $product->id,
                     'machine_id' => $item['machine_id'] ?? null,
                     'quantity' => $item['quantity'],
-                    'price' => $product->price, 
+                    'price' => $product->price,
                     'subtotal' => $subtotal,
                 ]);
 
@@ -121,7 +121,7 @@ class TransactionController extends Controller
                 // Jika saldo koin sudah memenuhi syarat, dan Super Admin sudah mengatur hadiahnya
                 while ($customer->coin_balance >= $targetKoin && $rewardId) {
                     $customer->decrement('coin_balance', $targetKoin);
-                    
+
                     // Sisipkan detergen gratis (harga 0)
                     $transaction->details()->create([
                         'product_id' => $rewardId,
@@ -139,7 +139,6 @@ class TransactionController extends Controller
                 'message' => 'Transaksi berhasil',
                 'data' => $transaction->load('details.product', 'customer')
             ], 201);
-
         } catch (\Exception $e) {
             // Jika ada error (misal stok habis), batalkan semua proses query di atas
             DB::rollBack();
